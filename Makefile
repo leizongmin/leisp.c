@@ -11,11 +11,10 @@ BDIR=out
 
 
 all:
+	make clean
 	mkdir -p $(ODIR)
 	mkdir -p $(BDIR)
-	@echo
-	@echo "Please run 'make cli' to build the leisp-cli command tool"
-	@echo
+	make cli
 
 $(ODIR)/%.o: src/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
