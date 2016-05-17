@@ -60,7 +60,7 @@ void lval_print(lval v) {
     case LVAL_NUM: printf("%li", v.num); break;
     case LVAL_ERR:
       if (v.err == LERR_DIV_ZERO) { printf("Error: Division By Zero!"); }
-      if (v.err == LERR_BAD_OP)   { printf("Error: Invalid Operator!"); }
+      if (v.err == LERR_BAD_OP)   { printf("Error: Invalid Symbol!"); }
       if (v.err == LERR_BAD_NUM)  { printf("Error: Invalid Number!"); }
       break;
   }
@@ -153,19 +153,21 @@ Press Ctrl+C to Exit.             \n\
 
 int main(int argc, char* argv[]) {
 
-  mpc_parser_t* Number    = mpc_new("number");
-  mpc_parser_t* Operator  = mpc_new("operator");
-  mpc_parser_t* Expr      = mpc_new("expr");
-  mpc_parser_t* Leisp     = mpc_new("leisp");
+  mpc_parser_t* Number  = mpc_new("number");
+  mpc_parser_t* Symbol  = mpc_new("symbol");
+  mpc_parser_t* Sexpr   = mpc_new("sexpr");
+  mpc_parser_t* Expr    = mpc_new("expr");
+  mpc_parser_t* Leisp   = mpc_new("leisp");
 
   mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                                           \
       number    : /-?[0-9]+/ ;                                                                  \
-      operator  : /[a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%][0-9a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%]*/ ;  \
-      expr      : <number> | '(' <operator> <expr>+ ')' ;                                       \
-      leisp     : /^/ <operator> <expr>+ /$/ ;                                                  \
+      symbol    : /[a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%][0-9a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%]*/ ;  \
+      sexpr     : '(' <expr>* ')' ;                                                             \
+      expr      : <number> | <symbol> | <sexpr> ;                                               \
+      leisp     : /^/ <symbol> <expr>+ /$/ ;                                                    \
     ",
-    Number, Operator, Expr, Leisp);
+    Number, Symbol, Sexpr, Expr, Leisp);
 
   print_welcome();
 
@@ -200,7 +202,7 @@ int main(int argc, char* argv[]) {
 
   }
 
-  mpc_cleanup(4, Number, Operator, Expr, Leisp);
+  mpc_cleanup(5, Number, Symbol, Sexpr, Expr, Leisp);
 
   return 0;
 
