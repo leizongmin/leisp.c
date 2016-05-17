@@ -1,9 +1,9 @@
 CC=gcc
-CFLAGS=-I.
+CFLAGS=-I. -std=c99 -Wall -ledit -lm
 
-DEPS=src/leisp.h
+DEPS=
 
-_OBJ=leisp.o cli.o
+_OBJ=parsing.o mpc.o
 OBJ=$(patsubst %,$(ODIR)/%,$(_OBJ))
 
 ODIR=build/obj
