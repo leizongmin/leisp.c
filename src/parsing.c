@@ -122,16 +122,16 @@ int main(int argc, char* argv[]) {
   mpc_parser_t* Number    = mpc_new("number");
   mpc_parser_t* Operator  = mpc_new("operator");
   mpc_parser_t* Expr      = mpc_new("expr");
-  mpc_parser_t* Lispy     = mpc_new("lispy");
+  mpc_parser_t* Leisp     = mpc_new("leisp");
 
   mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                                           \
       number    : /-?[0-9]+/ ;                                                                  \
       operator  : /[a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%][0-9a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%]*/ ;  \
       expr      : <number> | '(' <operator> <expr>+ ')' ;                                       \
-      lispy     : /^/ <operator> <expr>+ /$/ ;                                                  \
+      leisp     : /^/ <operator> <expr>+ /$/ ;                                                  \
     ",
-    Number, Operator, Expr, Lispy);
+    Number, Operator, Expr, Leisp);
 
   print_welcome();
 
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) {
     } else {
 
       mpc_result_t r;
-      if (mpc_parse("<stdin>", input, Lispy, &r)) {
+      if (mpc_parse("<stdin>", input, Leisp, &r)) {
 
         // mpc_ast_print(r.output);
         long result = eval(r.output);
@@ -167,7 +167,7 @@ int main(int argc, char* argv[]) {
 
   }
 
-  mpc_cleanup(4, Number, Operator, Expr, Lispy);
+  mpc_cleanup(4, Number, Operator, Expr, Leisp);
 
   return 0;
 
