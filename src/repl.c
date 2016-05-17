@@ -66,6 +66,26 @@ Press Ctrl+C to Exit.             \n\
 }
 
 
+void run_loop(mpc_parser_t* Leisp, char* input) {
+
+  mpc_result_t r;
+  if (mpc_parse("<stdin>", input, Leisp, &r)) {
+
+    lval* x = lval_eval(lval_read(r.output));
+    lval_println(x);
+    lval_del(x);
+    mpc_ast_delete(r.output);
+
+  } else {
+
+    mpc_err_print(r.error);
+    mpc_err_delete(r.error);
+
+  }
+
+}
+
+
 int main(int argc, char* argv[]) {
 
   mpc_parser_t* Number  = mpc_new("number");
@@ -88,37 +108,28 @@ int main(int argc, char* argv[]) {
 
   print_welcome();
 
+  #ifdef DEBUG
+
+  run_loop(Leisp, "+ 1 2");
+
+  #else
+
   while (1) {
 
     char* input = readline("leisp> ");
     add_history(input);
 
     if (strcmp(input, ":h") == 0) {
-
       print_help();
-
     } else {
-
-      mpc_result_t r;
-      if (mpc_parse("<stdin>", input, Leisp, &r)) {
-
-        lval* x = lval_eval(lval_read(r.output));
-        lval_println(x);
-        lval_del(x);
-        mpc_ast_delete(r.output);
-
-      } else {
-
-        mpc_err_print(r.error);
-        mpc_err_delete(r.error);
-
-      }
-
+      run_loop(Leisp, input);
     }
 
     free(input);
 
   }
+
+  #endif
 
   mpc_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Leisp);
 

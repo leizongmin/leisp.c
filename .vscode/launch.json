@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C++ Launch (GDB)",
+      "type": "cppdbg",
+      "request": "launch",
+      "launchOptionType": "Local",
+      "miDebuggerPath": "gdb",
+      "targetArchitecture": "x64",
+      "program": "${workspaceRoot}/out/repl_debug",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceRoot}",
+      "environment": []
+    }
+  ]
+}

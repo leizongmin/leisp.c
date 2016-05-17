@@ -1,6 +1,7 @@
 CC=gcc
 CFLAGS=-I. -std=c99 -Wall
-CFLAGS2=-ledit -lm
+CFLAGS_LINK=-ledit -lm
+CFLAGS_DEBUG=-g
 
 DEPS=
 
@@ -16,12 +17,17 @@ all:
 	mkdir -p $(ODIR)
 	mkdir -p $(BDIR)
 	make repl
+	make repl_debug
 
 $(ODIR)/%.o: src/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 repl: $(OBJ)
-	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS) $(CFLAGS2)
+	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS) $(CFLAGS_LINK)
+
+repl_debug: $(OBJ)
+	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS) $(CFLAGS_LINK) $(CFLAGS_DEBUG)
 
 clean:
 	rm -rf build
+	rm -rf out
