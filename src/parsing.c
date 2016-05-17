@@ -101,6 +101,22 @@ Press Ctrl+C to Exit.                                 \n\
 }
 
 
+void print_help() {
+
+  printf("\n\
+==================================\n\
+Help                              \n\
+                                  \n\
++ 1 2                             \n\
+  => 3                            \n\
+                                  \n\
+Press Ctrl+C to Exit.             \n\
+==================================\n\
+  \n");
+
+}
+
+
 int main(int argc, char* argv[]) {
 
   mpc_parser_t* Number    = mpc_new("number");
@@ -109,11 +125,11 @@ int main(int argc, char* argv[]) {
   mpc_parser_t* Lispy     = mpc_new("lispy");
 
   mpca_lang(MPCA_LANG_DEFAULT,
-    "                                                                                         \
-      number    : /-?[0-9]+/ ;                                                                \
-      operator  : /[a-zA-Z\\+\\-\\*\\/\\-\\?\\^\:_%][0-9a-zA-Z\\+\\-\\*\\/\\-\\?\\^\:_%]*/ ;  \
-      expr      : <number> | '(' <operator> <expr>+ ')' ;                                     \
-      lispy     : /^/ <operator> <expr>+ /$/ ;                                                \
+    "                                                                                           \
+      number    : /-?[0-9]+/ ;                                                                  \
+      operator  : /[a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%][0-9a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%]*/ ;  \
+      expr      : <number> | '(' <operator> <expr>+ ')' ;                                       \
+      lispy     : /^/ <operator> <expr>+ /$/ ;                                                  \
     ",
     Number, Operator, Expr, Lispy);
 
@@ -124,18 +140,26 @@ int main(int argc, char* argv[]) {
     char* input = readline("leisp> ");
     add_history(input);
 
-    mpc_result_t r;
-    if (mpc_parse("<stdin>", input, Lispy, &r)) {
+    if (strcmp(input, ":h") == 0) {
 
-      // mpc_ast_print(r.output);
-      long result = eval(r.output);
-      printf("%li\n", result);
-      mpc_ast_delete(r.output);
+      print_help();
 
     } else {
 
-      mpc_err_print(r.error);
-      mpc_err_delete(r.error);
+      mpc_result_t r;
+      if (mpc_parse("<stdin>", input, Lispy, &r)) {
+
+        // mpc_ast_print(r.output);
+        long result = eval(r.output);
+        printf("%li\n", result);
+        mpc_ast_delete(r.output);
+
+      } else {
+
+        mpc_err_print(r.error);
+        mpc_err_delete(r.error);
+
+      }
 
     }
 
