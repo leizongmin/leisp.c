@@ -186,10 +186,10 @@ lval* builtin_op(lval* a, char* op) {
   if ((strcmp(op, "-") == 0) && a->count == 0) { return x->num = -x->num; }
   while (a->count > 0) {
     lval* y = lval_pop(a, 0);
-    if (strcmp(op, "+") == 0 || strcmp(op, "add") == 0)   { x->num += y->num; }
-    if (strcmp(op, "-") == 0 || strcmp(op, "minus") == 0) { x->num -= y->num; }
-    if (strcmp(op, "*") == 0 || strcmp(op, "times") == 0) { x->num *= y->num; }
-    if (strcmp(op, "/") == 0 || strcmp(op, "div") == 0)   {
+    if (strcmp(op, "+") == 0) { x->num += y->num; }
+    if (strcmp(op, "-") == 0) { x->num -= y->num; }
+    if (strcmp(op, "*") == 0) { x->num *= y->num; }
+    if (strcmp(op, "/") == 0) {
       if (y->num == 0) {
         lval_del(x);
         lval_del(y);
