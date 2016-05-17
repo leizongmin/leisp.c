@@ -88,12 +88,12 @@ void run_loop(mpc_parser_t* Leisp, char* input) {
 
 int main(int argc, char* argv[]) {
 
-  mpc_parser_t* Number  = mpc_new("number");
-  mpc_parser_t* Symbol  = mpc_new("symbol");
-  mpc_parser_t* Sexpr   = mpc_new("sexpr");
-  mpc_parser_t* Qexpr   = mpc_new("qexpr");
-  mpc_parser_t* Expr    = mpc_new("expr");
-  mpc_parser_t* Leisp   = mpc_new("leisp");
+  mpc_parser_t* ANumber = mpc_new("number");
+  mpc_parser_t* ASymbol = mpc_new("symbol");
+  mpc_parser_t* ASexpr  = mpc_new("sexpr");
+  mpc_parser_t* AQexpr  = mpc_new("qexpr");
+  mpc_parser_t* AExpr   = mpc_new("expr");
+  mpc_parser_t* ALeisp  = mpc_new("leisp");
 
   mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                                           \
@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
       expr      : <number> | <symbol> | <sexpr> | <qexpr> ;                                     \
       leisp     : /^/ <expr>* /$/ ;                                                             \
     ",
-    Number, Symbol, Sexpr, Qexpr, Expr, Leisp);
+    ANumber, ASymbol, ASexpr, AQexpr, AExpr, ALeisp);
 
   print_welcome();
 
@@ -116,14 +116,14 @@ int main(int argc, char* argv[]) {
     if (strcmp(input, ":h") == 0) {
       print_help();
     } else {
-      run_loop(Leisp, input);
+      run_loop(ALeisp, input);
     }
 
     free(input);
 
   }
 
-  mpc_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Leisp);
+  mpc_cleanup(6, ANumber, ASymbol, ASexpr, AQexpr, AExpr, ALeisp);
 
   return 0;
 
