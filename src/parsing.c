@@ -79,6 +79,28 @@ long eval(mpc_ast_t* t) {
 }
 
 
+void print_welcome() {
+
+  printf("\n\n\
+##       ######## ####  ######  ########  \n\
+##       ##        ##  ##    ## ##     ## \n\
+##       ##        ##  ##       ##     ## \n\
+##       ######    ##   ######  ########  \n\
+##       ##        ##        ## ##        \n\
+##       ##        ##  ##    ## ##        \n\
+######## ######## ####  ######  ##        \n\
+  \n");
+  printf("Welcome to leisp 0.0.1 (%s) <http://ucdok.com/>\n", platform);
+  printf("\n\
+Copyright (c) 2016 Zongmin Lei <leizongmin@gmail.com> \n\
+                                                      \n\
+Type :h and hit Enter for context help.               \n\
+Press Ctrl+C to Exit.                                 \n\
+  \n");
+
+}
+
+
 int main(int argc, char* argv[]) {
 
   mpc_parser_t* Number    = mpc_new("number");
@@ -87,20 +109,19 @@ int main(int argc, char* argv[]) {
   mpc_parser_t* Lispy     = mpc_new("lispy");
 
   mpca_lang(MPCA_LANG_DEFAULT,
-    "                                                                                     \
-      number    : /-?[0-9]+/ ;                                                            \
-      operator  : /[a-zA-Z\\+\\-\\*\\/\\-\\?\\^_%][0-9a-zA-Z\\+\\-\\*\\/\\-\\?\\^_%]*/ ;  \
-      expr      : <number> | '(' <operator> <expr>+ ')' ;                                 \
-      lispy     : /^/ <operator> <expr>+ /$/ ;                                            \
+    "                                                                                         \
+      number    : /-?[0-9]+/ ;                                                                \
+      operator  : /[a-zA-Z\\+\\-\\*\\/\\-\\?\\^\:_%][0-9a-zA-Z\\+\\-\\*\\/\\-\\?\\^\:_%]*/ ;  \
+      expr      : <number> | '(' <operator> <expr>+ ')' ;                                     \
+      lispy     : /^/ <operator> <expr>+ /$/ ;                                                \
     ",
     Number, Operator, Expr, Lispy);
 
-  printf("Leisp Version 0.0.1 (%s)\n", platform);
-  printf("Press Ctrl+C to Exit\n\n");
+  print_welcome();
 
   while (1) {
 
-    char* input = readline("Leisp> ");
+    char* input = readline("leisp> ");
     add_history(input);
 
     mpc_result_t r;
