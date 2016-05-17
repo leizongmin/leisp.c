@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
       number    : /-?[0-9]+/ ;                                                                  \
       symbol    : /[a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%][0-9a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%]*/ ;  \
       sexpr     : '(' <expr>* ')' ;                                                             \
-      qexpr     : '(' <expr>* ')' ;                                                             \
+      qexpr     : '{' <expr>* '}' ;                                                             \
       expr      : <number> | <symbol> | <sexpr> | <qexpr> ;                                     \
       leisp     : /^/ <expr>* /$/ ;                                                             \
     ",
