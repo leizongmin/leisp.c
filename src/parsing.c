@@ -32,41 +32,79 @@ const char* platform = "Linux";
 #endif
 
 
-long eval_op(long x, char* op, long y) {
+enum { LVAL_NUM, LVAL_ERR };
+enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 
-  if (strcmp(op, "+") == 0) { return x + y; }
-  if (strcmp(op, "add") == 0) { return x + y; }
+typedef struct {
+  int type;
+  long num;
+  int err;
+} lval;
 
-  if (strcmp(op, "-") == 0) { return x - y; }
-  if (strcmp(op, "minus") == 0) { return x - y; }
+lval lval_num(long x) {
+  lval v;
+  v.type = LVAL_NUM;
+  v.num = x;
+  return v;
+}
 
-  if (strcmp(op, "*") == 0) { return x * y; }
-  if (strcmp(op, "times") == 0) { return x * y; }
+lval lval_err(int x) {
+  lval v;
+  v.type = LVAL_ERR;
+  v.err = x;
+  return v;
+}
 
-  if (strcmp(op, "/") == 0) { return x / y; }
-  if (strcmp(op, "divide") == 0) { return x / y; }
+void lval_print(lval v) {
+  switch (v.type) {
+    case LVAL_NUM: printf("%li", v.num); break;
+    case LVAL_ERR:
+      if (v.err == LERR_DIV_ZERO) { printf("Error: Division By Zero!"); }
+      if (v.err == LERR_BAD_OP)   { printf("Error: Invalid Operator!"); }
+      if (v.err == LERR_BAD_NUM)  { printf("Error: Invalid Number!"); }
+      break;
+  }
+}
 
-  if (strcmp(op, "%") == 0) { return x % y; }
-  if (strcmp(op, "mod") == 0) { return x % y; }
+void lval_println(lval v) {
+  lval_print(v);
+  putchar('\n');
+}
 
-  if (strcmp(op, "^") == 0) { return pow(x, y); }
 
-  if (strcmp(op, "min") == 0) { return x < y ? x : y; }
-  if (strcmp(op, "max") == 0) { return x > y ? x : y; }
+lval eval_op(lval x, char* op, lval y) {
 
-  return 0;
+  if (x.type == LVAL_ERR) { return x; }
+  if (y.type == LVAL_ERR) { return y; }
+
+  if (strcmp(op, "+") == 0 || strcmp(op, "add") == 0) { return lval_num(x.num + y.num); }
+  if (strcmp(op, "-") == 0 || strcmp(op, "minus") == 0) { return lval_num(x.num - y.num); }
+  if (strcmp(op, "*") == 0 || strcmp(op, "times") == 0) { return lval_num(x.num * y.num); }
+  if (strcmp(op, "/") == 0 || strcmp(op, "divide") == 0) {
+    return y.num == 0
+      ? lval_err(LERR_DIV_ZERO)
+      : lval_num(x.num / y.num);
+  }
+  if (strcmp(op, "%") == 0 || strcmp(op, "mod") == 0) { return lval_num(x.num % y.num); }
+  if (strcmp(op, "^") == 0) { return lval_num(pow(x.num, y.num)); }
+  if (strcmp(op, "min") == 0) { return x.num < y.num ? x : y; }
+  if (strcmp(op, "max") == 0) { return x.num > y.num ? x : y; }
+
+  return lval_err(LERR_BAD_OP);
 
 }
 
 
-long eval(mpc_ast_t* t) {
+lval eval(mpc_ast_t* t) {
 
   if (strstr(t->tag, "number")) {
-    return atoi(t->contents);
+    errno = 0;
+    long x = strtol(t->contents, NULL, 10);
+    return errno != ERANGE ? lval_num(x) : lval_err(LERR_BAD_NUM);
   }
 
   char* op = t->children[1]->contents;
-  long x = eval(t->children[2]);
+  lval x = eval(t->children[2]);
 
   int i = 3;
   while (strstr(t->children[i]->tag, "expr")) {
@@ -80,7 +118,6 @@ long eval(mpc_ast_t* t) {
 
 
 void print_welcome() {
-
   printf("\n\n\
 ##       ######## ####  ######  ########  \n\
 ##       ##        ##  ##    ## ##     ## \n\
@@ -97,12 +134,10 @@ Copyright (c) 2016 Zongmin Lei <leizongmin@gmail.com> \n\
 Type :h and hit Enter for context help.               \n\
 Press Ctrl+C to Exit.                                 \n\
   \n");
-
 }
 
 
 void print_help() {
-
   printf("\n\
 ==================================\n\
 Help                              \n\
@@ -113,7 +148,6 @@ Help                              \n\
 Press Ctrl+C to Exit.             \n\
 ==================================\n\
   \n");
-
 }
 
 
@@ -149,9 +183,8 @@ int main(int argc, char* argv[]) {
       mpc_result_t r;
       if (mpc_parse("<stdin>", input, Leisp, &r)) {
 
-        // mpc_ast_print(r.output);
-        long result = eval(r.output);
-        printf("%li\n", result);
+        lval result = eval(r.output);
+        lval_println(result);
         mpc_ast_delete(r.output);
 
       } else {
