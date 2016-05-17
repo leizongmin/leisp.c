@@ -1,5 +1,6 @@
 CC=gcc
-CFLAGS=-I. -std=c99 -Wall -ledit -lm
+CFLAGS=-I. -std=c99 -Wall
+CFLAGS2=-ledit -lm
 
 DEPS=
 
@@ -20,7 +21,7 @@ $(ODIR)/%.o: src/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 cli: $(OBJ)
-	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS)
+	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS) $(CFLAGS2)
 
 clean:
 	rm -rf build
