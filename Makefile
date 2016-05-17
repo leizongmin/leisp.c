@@ -4,7 +4,7 @@ CFLAGS2=-ledit -lm
 
 DEPS=
 
-_OBJ=parsing.o mpc.o
+_OBJ=parsing.o mpc.o repl.o
 OBJ=$(patsubst %,$(ODIR)/%,$(_OBJ))
 
 ODIR=build/obj
@@ -15,12 +15,12 @@ all:
 	make clean
 	mkdir -p $(ODIR)
 	mkdir -p $(BDIR)
-	make cli
+	make repl
 
 $(ODIR)/%.o: src/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-cli: $(OBJ)
+repl: $(OBJ)
 	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS) $(CFLAGS2)
 
 clean:
