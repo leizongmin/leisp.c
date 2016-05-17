@@ -1,6 +1,13 @@
 #include "parsing.h"
 
 
+int substr(char* r, char* s, int start, int len) {
+  memcpy(r, s + start, len);
+  r[len] = '\0';
+  return r;
+}
+
+
 lval* lval_num(long x) {
   lval* v = malloc(sizeof(lval));
   v->type = LVAL_NUM;
@@ -13,6 +20,14 @@ lval* lval_err(char* m) {
   v->type = LVAL_ERR;
   v->err = malloc(strlen(m) + 1);
   strcpy(v->err, m);
+  return v;
+}
+
+lval* lval_str(char* s) {
+  lval* v = malloc(sizeof(lval));
+  v->type = LVAL_STR;
+  v->str = malloc(strlen(s) - 1);
+  substr(v->str, s, 1, strlen(s) - 2);
   return v;
 }
 
@@ -54,6 +69,7 @@ void lval_expr_print(lval* v, char open, char close) {
 void lval_print(lval* v) {
   switch (v->type) {
     case LVAL_NUM:    printf("%li", v->num);        break;
+    case LVAL_STR:    printf("\"%s\"", v->str);     break;
     case LVAL_ERR:    printf("Error: %s", v->err);  break;
     case LVAL_SYM:    printf("%s", v->sym);         break;
     case LVAL_SEXPR:  lval_expr_print(v, '(', ')'); break;
@@ -65,6 +81,7 @@ void lval_del(lval* v) {
   switch (v->type) {
     case LVAL_NUM:                break;
     case LVAL_ERR: free(v->err);  break;
+    case LVAL_STR: free(v->str);  break;
     case LVAL_SYM: free(v->sym);  break;
     case LVAL_SEXPR:
     case LVAL_QEXPR:
@@ -237,6 +254,7 @@ lval* lval_read_num(mpc_ast_t* t) {
 
 lval* lval_read(mpc_ast_t* t) {
   if (strstr(t->tag, "number")) { return lval_read_num(t); }
+  if (strstr(t->tag, "string")) { return lval_str(t->contents); }
   if (strstr(t->tag, "symbol")) { return lval_sym(t->contents); }
   lval* x = NULL;
   if (strcmp(t->tag, ">") == 0) { x = lval_sexpr(); }

@@ -71,6 +71,9 @@ void run_loop(mpc_parser_t* Leisp, char* input) {
   mpc_result_t r;
   if (mpc_parse("<stdin>", input, Leisp, &r)) {
 
+    // mpc_ast_print(r.output);
+    // putchar('\n');
+
     lval* x = lval_eval(lval_read(r.output));
     lval_println(x);
     lval_del(x);
@@ -89,6 +92,7 @@ void run_loop(mpc_parser_t* Leisp, char* input) {
 int main(int argc, char* argv[]) {
 
   mpc_parser_t* ANumber = mpc_new("number");
+  mpc_parser_t* AString = mpc_new("string");
   mpc_parser_t* ASymbol = mpc_new("symbol");
   mpc_parser_t* ASexpr  = mpc_new("sexpr");
   mpc_parser_t* AQexpr  = mpc_new("qexpr");
@@ -98,13 +102,14 @@ int main(int argc, char* argv[]) {
   mpca_lang(MPCA_LANG_DEFAULT,
     "                                                                                           \
       number    : /-?[0-9]+/ ;                                                                  \
+      string    : /\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"|\\'([^\\'\\\\]*(\\\\.[^\\'\\\\]*)*)\\'/ ; \
       symbol    : /[a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%][0-9a-zA-Z\\+\\-\\*\\/\\-\\?\\^\\:_%]*/ ;  \
       sexpr     : '(' <expr>* ')' ;                                                             \
       qexpr     : '{' <expr>* '}' ;                                                             \
-      expr      : <number> | <symbol> | <sexpr> | <qexpr> ;                                     \
+      expr      : <number> | <string> | <symbol> | <sexpr> | <qexpr> ;                          \
       leisp     : /^/ <expr>* /$/ ;                                                             \
     ",
-    ANumber, ASymbol, ASexpr, AQexpr, AExpr, ALeisp);
+    ANumber, AString, ASymbol, ASexpr, AQexpr, AExpr, ALeisp);
 
   print_welcome();
 
@@ -123,7 +128,7 @@ int main(int argc, char* argv[]) {
 
   }
 
-  mpc_cleanup(6, ANumber, ASymbol, ASexpr, AQexpr, AExpr, ALeisp);
+  mpc_cleanup(7, ANumber, AString, ASymbol, ASexpr, AQexpr, AExpr, ALeisp);
 
   return 0;
 

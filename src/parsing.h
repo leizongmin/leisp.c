@@ -1,7 +1,8 @@
 #include <math.h>
 #include "mpc.h"
 
-enum { LVAL_ERR, LVAL_NUM, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
+
+enum { LVAL_ERR, LVAL_NUM, LVAL_STR, LVAL_SYM, LVAL_SEXPR, LVAL_QEXPR };
 enum { LERR_DIV_ZERO, LERR_BAD_OP, LERR_BAD_NUM };
 
 typedef struct lval {
@@ -9,6 +10,7 @@ typedef struct lval {
   long num;
   char* err;
   char* sym;
+  char* str;
   int count;
   struct lval** cell;
 } lval;
@@ -18,6 +20,7 @@ typedef struct lval {
 
 lval* lval_num(long x);
 lval* lval_err(char* m);
+lval* lval_str(char* s);
 lval* lval_sym(char* s);
 lval* lval_sexpr(void);
 lval* lval_qexpr(void);
