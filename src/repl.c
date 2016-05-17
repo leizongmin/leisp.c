@@ -108,12 +108,6 @@ int main(int argc, char* argv[]) {
 
   print_welcome();
 
-  #ifdef DEBUG
-
-  run_loop(Leisp, "+ 1 2");
-
-  #else
-
   while (1) {
 
     char* input = readline("leisp> ");
@@ -128,8 +122,6 @@ int main(int argc, char* argv[]) {
     free(input);
 
   }
-
-  #endif
 
   mpc_cleanup(6, Number, Symbol, Sexpr, Qexpr, Expr, Leisp);
 
